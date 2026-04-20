@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Schedule List - LectureBuzz{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Schedule List</h2>
+        
+        <div class="mb-3">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{% url 'schedule_calendar' %}" class="btn btn-info">Calendar View</a>
+        </div>
+
+        {% if schedules %}
+            <div class="row">
+                {% for schedule in schedules %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5>{{ schedule.subject_name }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Topic:</strong> {{ schedule.topic }}</p>
+                                <p><strong>Date:</strong> {{ schedule.date }}</p>
+                                <p><strong>Time:</strong> {{ schedule.start_time }} - {{ schedule.end_time }}</p>
+                                <p><strong>Lecturer:</strong> {{ schedule.lecturer.get_full_name|default:schedule.lecturer.username }}</p>
+                                {% if schedule.batch %}
+                                    <p><strong>Batch:</strong> {{ schedule.batch }}</p>
+                                {% endif %}
+                                <a href="{% url 'schedule_detail' schedule.id %}" class="btn btn-sm btn-info">View Details</a>
+                                {% if user.user_type == 'student' %}
+                                    <a href="{% url 'set_reminder' schedule.id %}" class="btn btn-sm btn-warning">Set Reminder</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="alert alert-info">No schedules available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

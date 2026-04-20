@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ schedule.subject_name }} - LectureBuzz{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3>{{ schedule.subject_name }}</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Topic:</strong> {{ schedule.topic }}</p>
+                <p><strong>Date:</strong> {{ schedule.date }}</p>
+                {% if schedule.day_order %}
+                    <p><strong>Day Order:</strong> <span class="badge bg-info">Day {{ schedule.day_order }}</span></p>
+                {% endif %}
+                <p><strong>Time:</strong> {{ schedule.start_time }} - {{ schedule.end_time }}</p>
+                <p><strong>Lecturer:</strong> {{ schedule.lecturer.get_full_name|default:schedule.lecturer.username }}</p>
+                {% if schedule.department %}
+                    <p><strong>Department:</strong> <span class="badge bg-primary">{{ schedule.department }}</span></p>
+                {% endif %}
+                {% if schedule.batch %}
+                    <p><strong>Batch:</strong> {{ schedule.batch }}</p>
+                {% endif %}
+                
+                {% if user.user_type == 'lecturer' %}
+                    <h5 class="mt-3">Assigned Students ({{ schedule.students.count }})</h5>
+                    {% if schedule.students.all %}
+                        <ul>
+                            {% for student in schedule.students.all %}
+                                <li>{{ student.get_full_name|default:student.username }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No students assigned yet.</p>
+                    {% endif %}
+                {% endif %}
+                
+                <div class="mt-3">
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+                    {% if user.user_type == 'student' %}
+                        <a href="{% url 'set_reminder' schedule.id %}" class="btn btn-warning">Set Reminder</a>
+                    {% elif user.user_type == 'lecturer' %}
+                        <a href="{% url 'edit_schedule' schedule.id %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_schedule' schedule.id %}" class="btn btn-danger">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Daily Digest Preferences - LectureBuzz{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gradient-header {
+        background: linear-gradient(135deg, #134E5E 0%, #71B280 100%);
+        padding: 40px;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .feature-box {
+        transition: all 0.3s ease;
+        border-left: 4px solid #71B280;
+    }
+    
+    .feature-box:hover {
+        transform: translateX(10px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .time-option {
+        transition: all 0.3s ease;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+    
+    .time-option:hover {
+        background: #f8f9fa;
+        transform: scale(1.02);
+    }
+    
+    .comparison-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    
+    .comparison-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .icon-large {
+        font-size: 3rem;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <div class="card shadow-lg border-0">
+            <div class="gradient-header text-white text-center">
+                <div class="icon-large mb-3">📅</div>
+                <h2 class="mb-0">Daily Schedule Digest</h2>
+            </div>
+            <div class="card-body p-4">
+
+
+                <!-- Settings Form -->
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="card mb-4 border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">⚙️ Your Preferences</h5>
+                            
+                            <div class="mb-4 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">Enable Daily Digest</h6>
+                                        <small class="text-muted">Get one notification with all your classes</small>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="is_enabled" name="is_enabled" 
+                                               style="width: 3rem; height: 1.5rem;"
+                                               {% if preference.is_enabled %}checked{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="digest_time" class="form-label h6">🕐 Choose ANY time for your digest:</label>
+                                <input type="time" name="digest_time" id="digest_time" 
+                                       class="form-control form-control-lg" 
+                                       value="{{ preference.digest_time|time:'H:i' }}"
+                                       required>
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        ⏰ Examples: 4:00 PM, 3:30 PM, 11:45 AM, 2:15 PM - Choose any time you want!
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-3">
+                                    <div class="feature-box p-3 bg-light rounded">
+                                        <div class="text-center">
+                                            <div class="fs-2 mb-2">🌅</div>
+                                            <strong>Morning</strong>
+                                            <p class="small text-muted mb-0">7:00 AM, 8:30 AM</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-box p-3 bg-light rounded">
+                                        <div class="text-center">
+                                            <div class="fs-2 mb-2">☀️</div>
+                                            <strong>Afternoon</strong>
+                                            <p class="small text-muted mb-0">12:30 PM, 4:00 PM</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-box p-3 bg-light rounded">
+                                        <div class="text-center">
+                                            <div class="fs-2 mb-2">🌙</div>
+                                            <strong>Evening</strong>
+                                            <p class="small text-muted mb-0">6:30 PM, 8:45 PM</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="feature-box p-3 bg-light rounded">
+                                        <div class="text-center">
+                                            <div class="fs-2 mb-2">⏰</div>
+                                            <strong>Any Time!</strong>
+                                            <p class="small text-muted mb-0">Your choice</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle"></i> Save My Preferences
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Action Buttons -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <a href="{% url 'generate_my_digest' %}" class="btn btn-outline-info btn-lg w-100">
+                            <i class="bi bi-lightning"></i> Test Digest Now
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'notifications' %}" class="btn btn-outline-secondary btn-lg w-100">
+                            <i class="bi bi-arrow-left"></i> Back to Notifications
+                        </a>
+                    </div>
+                </div>
+
+                <!-- How It Works -->
+                <div class="card bg-gradient" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+                    <div class="card-body">
+                        <h5 class="mb-4 text-center">🎯 How It Works</h5>
+                        <div class="row g-3">
+                            <div class="col-md-3 text-center">
+                                <div class="fs-1 mb-2">1️⃣</div>
+                                <p class="small"><strong>System checks</strong><br>your schedule daily</p>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="fs-1 mb-2">2️⃣</div>
+                                <p class="small"><strong>Creates digest</strong><br>with all classes</p>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="fs-1 mb-2">3️⃣</div>
+                                <p class="small"><strong>Sends at</strong><br>your chosen time</p>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="fs-1 mb-2">4️⃣</div>
+                                <p class="small"><strong>You stay</strong><br>organized! 🎉</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

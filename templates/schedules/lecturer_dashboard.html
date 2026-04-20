@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Lecturer Dashboard - LectureBuzz{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Lecturer Dashboard</h2>
+        <p>Welcome, {{ user.username }}!</p>
+        
+        {% if user.lecturer_profile.subjects %}
+        <div class="alert alert-info">
+            <strong><i class="bi bi-book"></i> Your Subjects:</strong> 
+            {% for subject in user.lecturer_profile.get_subjects_list %}
+                <span class="badge bg-primary me-1">{{ subject }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="mb-3">
+            <a href="{% url 'create_schedule' %}" class="btn btn-success">Create New Schedule</a>
+            <a href="{% url 'schedule_calendar' %}" class="btn btn-info">View Calendar</a>
+        </div>
+
+        <h3>My Schedules</h3>
+        {% if schedules %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Day Order</th>
+                            <th>Time</th>
+                            <th>Subject</th>
+                            <th>Topic</th>
+                            <th>Department</th>
+                            <th>Batch</th>
+                            <th>Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in schedules %}
+                            <tr>
+                                <td>{{ schedule.date }}</td>
+                                <td>
+                                    {% if schedule.day_order %}
+                                        <span class="badge bg-info">Day {{ schedule.day_order }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ schedule.start_time }} - {{ schedule.end_time }}</td>
+                                <td>{{ schedule.subject_name }}</td>
+                                <td>{{ schedule.topic }}</td>
+                                <td><span class="badge bg-primary">{{ schedule.department|default:"N/A" }}</span></td>
+                                <td>{{ schedule.batch|default:"All" }}</td>
+                                <td><span class="badge bg-success">{{ schedule.students.count }}</span></td>
+                                <td>
+                                    <a href="{% url 'schedule_detail' schedule.id %}" class="btn btn-sm btn-info">View</a>
+                                    <a href="{% url 'edit_schedule' schedule.id %}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="{% url 'delete_schedule' schedule.id %}" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="alert alert-info">No schedules created yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
